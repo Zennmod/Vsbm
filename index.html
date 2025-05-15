@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VSbM Cyber Portal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background-color: #000;
+    color: #00ff00;
+    font-family: 'Share Tech Mono', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    transition: background-color 0.5s, color 0.5s;
+  }
+  body.light {
+    background-color: #f0f0f0;
+    color: #004400;
+  }
+  .container {
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+  }
+  #toggleTheme {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-family: monospace;
+    font-size: 14px;
+    user-select: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+  }
+  #toggleTheme:hover {
+    background-color: #00ff00;
+    color: #000;
+  }
+  .terminal-text {
+    white-space: pre-wrap;
+    font-size: 1.2rem;
+    line-height: 1.5;
+    min-height: 6em;
+  }
+  .cursor {
+    display: inline-block;
+    background-color: #00ff00;
+    width: 10px;
+    height: 20px;
+    margin-left: 3px;
+    animation: blink 1s step-start 0s infinite;
+    vertical-align: bottom;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+  .loading {
+    font-size: 1.5rem;
+    letter-spacing: 3px;
+    animation: glitch 2s linear infinite;
+    margin-bottom: 20px;
+  }
+  @keyframes glitch {
+    0% {
+      text-shadow:
+        2px 0 red,
+        -2px 0 cyan;
+    }
+    50% {
+      text-shadow:
+        -2px 0 red,
+        2px 0 cyan;
+    }
+    100% {
+      text-shadow:
+        2px 0 red,
+        -2px 0 cyan;
+    }
+  }
+  .social-links {
+    margin-top: 20px;
+  }
+  .social-links a {
+    color: #00ff00;
+    margin: 0 10px;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .social-links a:hover {
+    text-decoration: underline;
+  }
+  @media (max-width: 600px) {
+    .terminal-text {
+      font-size: 1rem;
+    }
+    #toggleTheme {
+      font-size: 12px;
+      padding: 5px 10px;
+    }
+  }
+</style>
+</head>
+<body>
+<button id="toggleTheme" aria-label="Toggle dark/light mode">Toggle Theme</button>
+<div class="container">
+  <div id="loading" class="loading">LOADING...</div>
+  <div id="terminal" class="terminal-text" aria-live="polite"></div>
+  <div class="social-links" style="display:none;">
+    <a href="https://github.com/Zennmod" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://instagram.com/zenn_slwlyy" target="_blank" rel="noopener noreferrer">Instagram</a>
+    <a href="mailto:retzzen@gmail.com">Email</a>
+  </div>
+</div>
+
+<audio id="typeSound" src="https://cdn.pixabay.com/audio/2021/10/22/audio_1bdf1747c9.mp3" preload="auto"></audio>
+
+<script>
+  const textLines = [
+    "Access Granted.",
+    "Welcome, Zennmod.",
+    "Stay sharp. Hack the world."
+  ];
+  const terminal = document.getElementById('terminal');
+  const loading = document.getElementById('loading');
+  const socialLinks = document.querySelector('.social-links');
+  const typeSound = document.getElementById('typeSound');
+  let currentLine = 0;
+  let currentChar = 0;
+  let isTyping = false;
+
+  function typeText(text, callback) {
+    isTyping = true;
+    if (currentChar < text.length) {
+      terminal.textContent += text.charAt(currentChar);
+      typeSound.currentTime = 0;
+      typeSound.play();
+      currentChar++;
+      setTimeout(() => typeText(text, callback), 80);
+    } else {
+      terminal.textContent += '\n';
+      isTyping = false;
+      callback();
+    }
+  }
+
+  function startTyping() {
+    if (currentLine < textLines.length) {
+      typeText(textLines[currentLine], () => {
+        currentLine++;
+        setTimeout(startTyping, 500);
+      });
+    } else {
+      socialLinks.style.display = 'block';
+    }
+  }
+
+  function showContent() {
+    loading.style.display = 'none';
+    startTyping();
+  }
+
+  // Mode Gelap Otomatis berdasarkan waktu lokal
+  function applyAutoTheme() {
+    const hour = new Date().getHours();
+    if (hour >= 18 || hour < 6) {
+      document.body.classList.remove('light');
+    } else {
+      document.body.classList.add('light');
+    }
+  }
+  applyAutoTheme();
+
+  // Toggle manual mode gelap/terang
+  document.getElementById('toggleTheme').addEventListener('click', () => {
+    document.body.classList.toggle('light');
+  });
+
+  // Mulai setelah delay loading dan glitch
+  setTimeout(showContent, 3000);
+</script>
+</body>
+  </html>
+  
